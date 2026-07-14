@@ -1,0 +1,68 @@
+{
+  "name": "CoreOps Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "575b3b23-2eec-4aee-8cc7-6db4d05e621d",
+      "name": "Error Handler"
+    },
+    {
+      "parameters": {
+        "fromEmail": "zainabsajidoctacer@gmail.com",
+        "toEmail": "alerts@example.com",
+        "subject": "=Workflow Error: {{$json.workflow.name}}",
+        "html": "={{JSON.stringify($json.execution.error, null, 2)}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        16
+      ],
+      "id": "e8caa85c-3253-4d5a-a99d-767d48349b97",
+      "name": "Send an Email",
+      "webhookId": "6689716b-532a-46ae-9714-972d26d92099",
+      "credentials": {
+        "smtp": {
+          "id": "ckWsdLUBhXp9AlaJ",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8e062d17-a8f5-47dc-a54d-466ae07b5ab4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d74db6d3ec7316d5f0a02431678248182a34037dabf7e42c350723b412d003e"
+  },
+  "nodeGroups": [],
+  "id": "jieZXiapFYCCzlS9",
+  "tags": []
+}

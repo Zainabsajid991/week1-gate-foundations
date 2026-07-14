@@ -1,0 +1,335 @@
+{
+  "name": "week1-gate-foundations.json.",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "week1-gate-foundations",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9f59d7e9-8fb0-47b1-b56b-9ea7e7417bba",
+      "name": "Webhook",
+      "webhookId": "f11c528f-4784-4dbe-9147-fc97c5f1da59"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a9eeb718-18e2-437c-a3e4-6b2ab747f770",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d0cc6b6b-88c0-46a0-a32e-b9fb1ada6484",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "active",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "0ac9671f-2139-4a58-933a-f65d8c3cf52f",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 85,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d33fe652-82d4-4635-a824-632f55dc26b2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        672,
+        -144
+      ],
+      "id": "e12998c0-bdbf-4686-b9d4-4d1c8c7841fa",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://coreops-api-zainab.free.beeceptor.com/v2/records",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"userId\": \"{{ $json.id }}\",\n  \"qualifyScore\": {{ $json.score }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        -400
+      ],
+      "id": "ece6c736-58b4-4c85-954b-abf0e21000af",
+      "name": "HTTP Request",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "oAuth2Api": {
+          "id": "USxlUjyQgySecoVw",
+          "name": "OAuth2 credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d1fe559-03ee-4312-a6e9-f82f2f6aa013",
+              "name": "processedId",
+              "value": "={{ $('Loop Over Items').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0fb281a3-9ad3-4469-b0ff-781f8e2e5304",
+              "name": "qualifyScore",
+              "value": "={{ $('Loop Over Items').item.json.score }}",
+              "type": "number"
+            },
+            {
+              "id": "f7903bc6-61ab-4423-8dad-897b44e5fc6b",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        -96
+      ],
+      "id": "99f377f9-5dbe-414d-bba9-90fcdec86f7b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "processedId"
+            },
+            {
+              "fieldToAggregate": "qualifyScore"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -128
+      ],
+      "id": "d8ff2c9f-368f-4c96-b3cf-79f0abd2b341",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1632,
+        -192
+      ],
+      "id": "aa7956cb-e4d8-4445-8e47-196c1162cd18",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "16746695-3720-4c19-86cf-81fceb5c6154",
+              "name": "processedIds",
+              "value": "={{ $json.processedId }}",
+              "type": "array"
+            },
+            {
+              "id": "e10f3fd3-120b-4951-ad92-81891951162f",
+              "name": "failures",
+              "value": 0,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        -304
+      ],
+      "id": "90646124-9262-4781-9f38-8d1559911006",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "jieZXiapFYCCzlS9",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "de23c7ae-5c8c-437a-89ba-946f2cc438f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d74db6d3ec7316d5f0a02431678248182a34037dabf7e42c350723b412d003e"
+  },
+  "nodeGroups": [],
+  "id": "3vG4XTVVOW0vhZ8B",
+  "tags": []
+}
